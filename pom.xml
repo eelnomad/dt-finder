@@ -1,12 +1,13 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>bi.vision</groupId>
-  <artifactId>dt-finder</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <name>DataType Finder</name>
-  <description>Finds data types of columns from file</description>
-  
-  
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>bi.vision</groupId>
+	<artifactId>dt-finder</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>DataType Finder</name>
+	<description>Finds data types of columns from file</description>
+
+
 	<properties>
 		<maven.complier.source>1.8</maven.complier.source>
 		<maven.complier.target>1.8</maven.complier.target>
@@ -41,6 +42,16 @@
 			<artifactId>jsch</artifactId>
 			<version>0.1.53</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-csv</artifactId>
+			<version>1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.4</version>
+		</dependency>
 
 	</dependencies>
 
@@ -52,5 +63,5 @@
 			</plugin>
 		</plugins>
 	</build>
-  
+
 </project>

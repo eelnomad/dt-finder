@@ -24,7 +24,7 @@ public class CommandLineProcessor {
 		Option fileName = Option.builder("f").argName("fileName").hasArg().desc("Path to file").longOpt("fileName")
 				.required().build();
 		Option delim = Option.builder("d").argName("delim").hasArg().desc("Delimiter in file").longOpt("delim")
-				.required().build();
+				.required().type(char.class).build();
 		Option quotes = Option.builder("q").argName("quotes").hasArg().desc("Quotes in file").longOpt("quotes").build();
 		Option colCount = Option.builder("c").argName("colCount").hasArg().desc("Number of columns in file")
 				.longOpt("colCount").required().build();

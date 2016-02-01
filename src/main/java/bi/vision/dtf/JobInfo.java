@@ -4,17 +4,17 @@ import org.apache.commons.cli.CommandLine;
 
 public class JobInfo {
 	private String fileName;
-	private String delim;
-	private String quotes;
+	private char delim;
+	private char quotes;
 	private int colCount;
 	private int sampSize;
 	private boolean noHead;
 
 	public JobInfo(CommandLine c1) {
 		this.fileName = c1.getOptionValue("fileName");
-		this.delim = c1.getOptionValue("delim");
+		this.delim = c1.getOptionValue("delim").charAt(0);
 		if (c1.getOptionValue("quotes") != null)
-			this.quotes = c1.getOptionValue("quotes");
+			this.quotes = c1.getOptionValue("quotes").charAt(0);
 		this.colCount = Integer.parseInt(c1.getOptionValue("colCount"));
 		this.setSampSize(-1);
 		if (c1.getOptionValue("sampSize") != null)
@@ -31,19 +31,19 @@ public class JobInfo {
 		this.fileName = fileName;
 	}
 
-	public String getDelim() {
+	public char getDelim() {
 		return delim;
 	}
 
-	public void setDelim(String delim) {
+	public void setDelim(char delim) {
 		this.delim = delim;
 	}
 
-	public String getQuotes() {
+	public char getQuotes() {
 		return quotes;
 	}
 
-	public void setQuotes(String quotes) {
+	public void setQuotes(char quotes) {
 		this.quotes = quotes;
 	}
 
