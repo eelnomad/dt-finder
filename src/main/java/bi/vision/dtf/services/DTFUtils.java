@@ -1,23 +1,31 @@
 package bi.vision.dtf.services;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import bi.vision.dtf.JobInfo;
 
 public class DTFUtils {
 	// private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-	
-	
+	public static int[] processLine(int[] status, String line, JobInfo jobInfo) {
+		String[] value = line.split(jobInfo.getDelim(), -1);
+
+		// Countermeasure for quotes included
+		if (value.length != status.length) {
+			//System.out.println("Line ignored");
+			return status;
+		}
+
+		for (int i = 0; i != status.length; i++) {
+			status[i] = processValue(status[i], value[i]);
+		}
+		return status;
+	}
+
 	public static int[] processLine(int[] status, String[] values, JobInfo jobInfo) {
 		for (int i = 0; i != status.length; i++) {
 			status[i] = processValue(status[i], values[i]);
 		}
 		return status;
 	}
-	
-	
 
 	public static String[] createHeader(String line, JobInfo jobInfo) {
 		return line.split(jobInfo.getDelim());

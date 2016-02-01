@@ -37,7 +37,6 @@ public class CommandLineProcessor {
 	}
 
 	public CommandLineProcessor parsArgs(String... arg0) {
-		logger.info("Application configuring...");
 		CommandLineParser cmdParser = new DefaultParser();
 		CommandLine cl = null;
 		try {

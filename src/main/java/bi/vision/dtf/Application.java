@@ -8,9 +8,11 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.Banner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.util.StringUtils;
 
 import bi.vision.dtf.services.CommandLineProcessor;
@@ -26,7 +28,10 @@ public class Application implements CommandLineRunner {
 	CommandLineProcessor cli;
 
 	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
+		SpringApplication app = new SpringApplication(Application.class);
+		app.setBannerMode(Banner.Mode.OFF);
+		app.setLogStartupInfo(false);
+		app.run(args);
 	}
 
 	public void run(String... arg0) {
@@ -35,9 +40,7 @@ public class Application implements CommandLineRunner {
 		BufferedReader br = null; // BufferedReader reading file
 
 		// Read and process application parameters
-		logger.info("Application configuring...");
 		JobInfo newJob = cli.parsArgs(arg0).getJobInfo();
-		logger.info("Command line arguments parsed successfully");
 
 		// Open file for reading
 		File file = new File(newJob.getFileName());
@@ -50,12 +53,12 @@ public class Application implements CommandLineRunner {
 
 		// Create array for results
 		int[] result = new int[newJob.getColCount()];
-		
-		// Create array to hold values of line
-		String[] values =  new String[newJob.getColCount()];
 
-		LineParser lineParser = new LineParser(newJob);
-		
+		// Create array to hold values of line
+		// String[] values = new String[newJob.getColCount()];
+		// LineParser lineParser = new LineParser(newJob.getDelim(),
+		// newJob.getQuotes());
+
 		try {
 			FileReader fr = new FileReader(file);
 			br = new BufferedReader(fr, BUFFER);
@@ -67,15 +70,23 @@ public class Application implements CommandLineRunner {
 			int i = 0;
 			int j = 0;
 			while ((line = br.readLine()) != null && i != newJob.getSampSize()) {
+
+				// TODO find a better place for this check of how many columns
+				// there are
 				if (j == 0) {
-					System.out.println("Col Count: " + (StringUtils.countOccurrencesOf(line, newJob.getDelim()) + 1));
+					logger.info("Col Count: {}",(StringUtils.countOccurrencesOf(line, newJob.getDelim()) + 1));
+
+					if (newJob.getColCount() != (StringUtils.countOccurrencesOf(line, newJob.getDelim()) + 1)) {
+						System.exit(1);
+					}
 					j++;
 				}
 				i++;
-				values = lineParser.parseString(values, line);
-				result = DTFUtils.processLine(result, values, newJob);
+				// values = lineParser.parseString(values, line);
+				// result = DTFUtils.processLine(result, values, newJob);
+				result = DTFUtils.processLine(result, line, newJob);
 			}
-			System.out.println("Rows Read: " + i);
+			logger.info("Rows Read: {}", i);
 		} catch (Exception e) {
 			// TODO
 			e.printStackTrace();
