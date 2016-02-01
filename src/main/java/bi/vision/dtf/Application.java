@@ -46,9 +46,6 @@ public class Application implements CommandLineRunner {
 		File file = new File(newJob.getFileName());
 
 		try {
-			// Create array for results
-			int[] result = new int[newJob.getColCount()];
-
 			Reader fr = new FileReader(file);
 			cp = new CSVParser(fr, CSVFormat.newFormat(newJob.getDelim()).withQuote(newJob.getQuotes()).withHeader());
 
@@ -59,17 +56,17 @@ public class Application implements CommandLineRunner {
 					System.exit(1);
 			}
 
-			// Create array for header names
-			String[] columnNames = DTFUtils.createHeader(header, newJob);
+			// Create array for results
+			DataType[] result = DTFUtils.createHeader(header, newJob);
 
 			int i = 0;
 			for (CSVRecord record : cp) {
 				i++;
-				result = DTFUtils.processLine(result, record, newJob);
+				result = DTFUtils.processLine(result, record);
 			}
 
 			logger.info("Rows Read: {}", i);
-			DTFUtils.printResults(columnNames, result);
+			DTFUtils.printResults(result);
 
 		} catch (Exception e) {
 			// TODO
