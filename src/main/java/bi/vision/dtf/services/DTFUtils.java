@@ -83,18 +83,15 @@ public class DTFUtils {
 				Float.parseFloat(value);
 				if (column.getLength() < value.length())
 					column.setLength(value.length());
-				try {
-				if (column.getPrecision() < value.substring(value.indexOf(".")).length())
-					column.setPrecision(value.substring(value.indexOf(".")).length() - 1);
-				}
-				catch (Exception e) {
-					// Do nothing, you found a 0
-				}
+				if (value.indexOf(".") != -1)
+					if (column.getPrecision() < value.substring(value.indexOf(".")).length())
+						column.setPrecision(value.substring(value.indexOf(".")).length() - 1);
 				column.setDatatype(1);
 				return column;
 			} catch (Exception e) {
 				// Do nothing
 			}
+			// Did not pass any parsing, setting to varchar
 		default:
 			if (column.getLength() < value.length())
 				column.setLength(value.length());
