@@ -55,7 +55,7 @@ public class DataType {
 		case 0:
 			return columnName + ": null (Please run with bigger dataset)";
 		case 1:
-			return columnName + ": numeric(" + length + "," + precision + ")";
+			return columnName + ": numeric(" + (length+precision) + "," + precision + ")";
 		case 2:
 			return columnName + ": int";
 		case 3:

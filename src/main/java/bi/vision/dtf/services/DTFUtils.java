@@ -2,6 +2,7 @@ package bi.vision.dtf.services;
 
 import java.util.Map;
 
+import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -9,33 +10,44 @@ import org.slf4j.LoggerFactory;
 
 import bi.vision.dtf.DataType;
 import bi.vision.dtf.JobInfo;
+import bi.vision.exceptions.ColNumException;
 
 public class DTFUtils {
-	private static Logger logger = LoggerFactory.getLogger(DTFUtils.class);
+	private static Logger logger = LoggerFactory.getLogger("generalLog");
 
-	public static DataType[] processLine(DataType[] columnInfo, CSVRecord line) {
-		// Countermeasure for bad lines
+	public static DataType[] processLine(DataType[] columnInfo, CSVRecord line) throws ColNumException {
+		// Countermeasure for lines that do not match the required number of columns
 		if (line.size() != columnInfo.length) {
 			// System.out.println("Line ignored");
-			return columnInfo;
+			// return columnInfo;
+			throw new ColNumException();
 		}
 
 		for (int i = 0; i != columnInfo.length; i++) {
 			columnInfo[i] = processValue(columnInfo[i], line.get(i));
-			if (16 == i)
-				logger.debug(line.get(i));
+			//For debugging the value at indicee i
+			if (7 == i)
+				logger.debug("Value of line " + i + ": " + line.get(i));
 		}
 		return columnInfo;
 	}
 
-	public static DataType[] createHeader(Map<String, Integer> line, JobInfo jobInfo) {
+	public static DataType[] createHeader(CSVParser cp, JobInfo jobInfo) throws ColNumException {
 		DataType[] header = new DataType[jobInfo.getColCount()];
-		String[] temp = line.keySet().toArray(new String[jobInfo.getColCount()]);
-		for (int i = 0; i != jobInfo.getColCount(); i++) {
-			if (jobInfo.isNoHead())
-				header[i] = new DataType("Col " + i);
-			else
+		if (!jobInfo.isNoHead()) {
+			Map<String, Integer> line = cp.getHeaderMap();
+			if (jobInfo.getColCount() != line.size()) {
+				System.out.printf("Col Count: %d\nLine: %s", line.size(), line);
+				throw new ColNumException();
+			}
+			String[] temp = line.keySet().toArray(new String[jobInfo.getColCount()]);
+			for (int i = 0; i != jobInfo.getColCount(); i++) {
 				header[i] = new DataType(temp[i]);
+			}
+		} else {
+			for (int i = 0; i != jobInfo.getColCount(); i++) {
+				header[i] = new DataType("Col " + i);
+			}
 		}
 		return header;
 	}
@@ -81,8 +93,8 @@ public class DTFUtils {
 		case 1:
 			try {
 				Float.parseFloat(value);
-				if (column.getLength() < value.length())
-					column.setLength(value.length());
+				if (column.getLength() < String.valueOf(Math.floor(Float.parseFloat(value))).length() - 2)
+					column.setLength(String.valueOf(Math.floor(Float.parseFloat(value))).length() - 2);
 				if (value.indexOf(".") != -1)
 					if (column.getPrecision() < value.substring(value.indexOf(".")).length())
 						column.setPrecision(value.substring(value.indexOf(".")).length() - 1);

@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Map;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -19,10 +18,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import bi.vision.dtf.services.CommandLineProcessor;
 import bi.vision.dtf.services.DTFUtils;
+import bi.vision.exceptions.ColNumException;
 
 @SpringBootApplication
 public class Application implements CommandLineRunner {
-	private static Logger logger = LoggerFactory.getLogger(Application.class);
+	private static Logger logger = LoggerFactory.getLogger("generalLog");
 	// private static final int BUFFER = 8192;
 
 	@Autowired
@@ -45,29 +45,29 @@ public class Application implements CommandLineRunner {
 		// Open file for reading
 		File file = new File(newJob.getFileName());
 
+		int i = 0;
 		try {
 			Reader fr = new FileReader(file);
-			cp = new CSVParser(fr, CSVFormat.newFormat(newJob.getDelim()).withQuote(newJob.getQuotes()).withHeader());
 
-			Map<String, Integer> header = cp.getHeaderMap();
-			if (!newJob.isNoHead()) {
-				logger.info("Col Count: {}", header.size());
-				if (newJob.getColCount() != header.size())
-					System.exit(1);
-			}
-
+			if (!newJob.isNoHead()) 
+				cp = new CSVParser(fr, CSVFormat.newFormat(newJob.getDelim()).withQuote(newJob.getQuotes()).withHeader());
+			else 
+				cp = new CSVParser(fr, CSVFormat.newFormat(newJob.getDelim()).withQuote(newJob.getQuotes()));
+			
 			// Create array for results
-			DataType[] result = DTFUtils.createHeader(header, newJob);
+			DataType[] result = DTFUtils.createHeader(cp, newJob);
 
-			int i = 0;
 			for (CSVRecord record : cp) {
 				i++;
 				result = DTFUtils.processLine(result, record);
 			}
 
-			logger.info("Rows Read: {}", i);
+			logger.info("{};Success;;{}",file.getName(), i);
 			DTFUtils.printResults(result);
-
+		} catch (ColNumException e) {
+			logger.info("{};Failed;InvalidColumnCount;{}",file.getName(), i);
+		} catch (IllegalArgumentException e) {
+			logger.info("{};Failed;InvalidColumnNames;{}",file.getName(), i);
 		} catch (Exception e) {
 			// TODO
 			e.printStackTrace();
