@@ -73,7 +73,9 @@ public class Application implements CommandLineRunner {
 			e.printStackTrace();
 		} finally {
 			try {
-				cp.close();
+				if (cp != null && !cp.isClosed()) {
+					cp.close();
+				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
